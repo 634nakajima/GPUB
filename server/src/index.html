@@ -9,7 +9,17 @@
   <header>
     <h1>GPUB Controller</h1>
     <div class="header-right">
-      <span id="server-info" class="server-info"></span>
+      <span id="server-info" class="server-info">
+        <span id="http-port-label"></span>
+        <span class="osc-port-group">
+          OSC UDP:
+          <input id="osc-port-input" type="number" class="osc-port-input"
+                 min="1024" max="65535"
+                 onkeydown="if(event.key==='Enter')applyOscPort()">
+          <button class="osc-apply-btn" onclick="applyOscPort()">▶</button>
+          <span id="osc-status-dot" class="osc-dot" title=""></span>
+        </span>
+      </span>
       <button class="btn-broadcast" onclick="broadcastAll()" data-i18n="btn.broadcast">Broadcast All</button>
       <button class="btn-ref" onclick="toggleRef()" data-i18n="btn.ref">Ref</button>
       <button class="btn-lang" id="btn-lang" onclick="toggleLang()">JA</button>

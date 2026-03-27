@@ -307,7 +307,7 @@
     <div class="feature-card">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg></div>
       <h3>OSC サポート</h3>
-      <p>UDP ポート 9000 で OSC メッセージを受信。Pure Data・Max/MSP・TouchDesigner からそのまま使用可能。</p>
+      <p>UDP ポート 9100 で OSC メッセージを受信。Pure Data・Max/MSP・TouchDesigner からそのまま使用可能。</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/></svg></div>
@@ -372,7 +372,7 @@ await fetch('http://localhost:3000/api/command', {
 <!-- OSC -->
 <section id="osc">
   <h2>OSC インターフェース</h2>
-  <p class="section-sub">UDP ポート 9000 でメッセージを受信。Pure Data・Max/MSP・TouchDesigner から直接送信可能。</p>
+  <p class="section-sub">UDP ポート 9100 でメッセージを受信。Pure Data・Max/MSP・TouchDesigner から直接送信可能。</p>
   <div class="two-col">
     <div class="code-block">
       <h3>アドレスパターン</h3>
@@ -389,12 +389,12 @@ await fetch('http://localhost:3000/api/command', {
       <pre>; デバイス #1 を絶対位置 400 に移動
 [list /gpub/motor/goto 1 400 5(
 |
-[osc.send 9000]
+[osc.send 9100]
 
 ; 全デバイス停止（deviceId 省略）
 [list /gpub/motor/stop(
 |
-[osc.send 9000]</pre>
+[osc.send 9100]</pre>
     </div>
   </div>
 
@@ -449,7 +449,7 @@ await fetch('http://localhost:3000/api/command', {
     <div class="feature-card">
       <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div>
       <h3>マルチプロトコル</h3>
-      <p>Socket.IO（デバイス接続）・REST API・OSC の 3 プロトコルを同時提供。ポート 3000（HTTP/WS）＋ 9000（UDP）。</p>
+      <p>Socket.IO（デバイス接続）・REST API・OSC の 3 プロトコルを同時提供。ポート 3000（HTTP/WS）＋ 9100（UDP）。</p>
     </div>
   </div>
 

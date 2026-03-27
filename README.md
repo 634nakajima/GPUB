@@ -142,7 +142,7 @@ npm run build:linux  # Linux (.AppImage)
 | ポート | プロトコル | 用途 |
 |--------|-----------|------|
 | 3000 | HTTP / WebSocket | Socket.IO（デバイス接続）、REST API |
-| 9000 | UDP | OSC |
+| 9100 | UDP | OSC |
 
 ---
 
@@ -214,7 +214,7 @@ await fetch('http://localhost:3000/api/command', {
 
 ## OSC インターフェース
 
-UDP ポート 9000 でOSCメッセージを受け付けます。
+UDP ポート 9100 でOSCメッセージを受け付けます。
 
 ### メッセージフォーマット
 
@@ -236,22 +236,22 @@ UDP ポート 9000 でOSCメッセージを受け付けます。
 ; デバイス #1 のモーターを200ステップ CW、5ms/step で駆動
 [list /gpub/motor/move 1 200 1 5(
 |
-[osc.send 9000]
+[osc.send 9100]
 
 ; デバイス #1 を絶対位置 400 に移動
 [list /gpub/motor/goto 1 400 5(
 |
-[osc.send 9000]
+[osc.send 9100]
 
 ; デバイス #1 の pin 0 に PWM（duty=128/255、10Hz）
 [list /gpub/switch/pwm 1 0 128 10(
 |
-[osc.send 9000]
+[osc.send 9100]
 
 ; 全デバイスに一斉送信（deviceId省略）
 [list /gpub/motor/stop(
 |
-[osc.send 9000]
+[osc.send 9100]
 ```
 
 ### SSR経由のAC機器制御（PWM周波数の目安）

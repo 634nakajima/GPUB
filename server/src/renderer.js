@@ -153,15 +153,44 @@ function toggleLang() {
 
 // --- Init ---
 let httpPort = 3000;
-let oscPort  = 9000;
+let oscPort  = 9100;
+
+function updateOscUI(active, port, error) {
+  const input = document.getElementById('osc-port-input');
+  const dot   = document.getElementById('osc-status-dot');
+  if (input) {
+    input.value = port;
+    input.classList.toggle('osc-input-error', !active);
+  }
+  if (dot) {
+    dot.className = 'osc-dot ' + (active ? 'osc-dot-active' : 'osc-dot-error');
+    dot.title = error || (active ? `OSC active (UDP ${port})` : '');
+  }
+  // Update ref panel if open
+  if (!document.getElementById('ref-overlay').hidden) populateRef();
+}
+
+function applyOscPort() {
+  const input = document.getElementById('osc-port-input');
+  const port  = parseInt(input.value);
+  if (isNaN(port) || port < 1024 || port > 65535) return;
+  oscPort = port;
+  window.gpub.restartOsc(port);
+}
 
 (async () => {
   const ports = await window.gpub.getPorts();
   httpPort = ports.http;
   oscPort  = ports.osc;
-  serverInfo.textContent = `HTTP :${httpPort}  OSC UDP :${oscPort}`;
+  document.getElementById('http-port-label').textContent = `HTTP :${httpPort}`;
+  updateOscUI(ports.oscActive, ports.osc);
   applyTranslations();
 })();
+
+window.gpub.onOscStatus(({ active, port, error }) => {
+  oscPort = port;
+  updateOscUI(active, port, error);
+});
 
 // --- Device cards ---
 window.gpub.onDevicesUpdated((devices) => {

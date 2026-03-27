@@ -5,8 +5,8 @@ const express = require('express');
 const { Server } = require('socket.io');
 const { Server: OscServer } = require('node-osc');
 
-const PORT     = 3000;
-const OSC_PORT = 9000;
+const PORT             = 3000;
+const DEFAULT_OSC_PORT = 9100;
 
 // --- HTTP + Socket.IO Server ---
 const expressApp = express();
@@ -169,27 +169,18 @@ expressApp.post('/api/command', (req, res) => {
 //   [list /gpub/motor/goto 1 400 5(    ->  [osc.send 9000]   <- absolute position
 //   [list /gpub/motor/move 200 1 5(    ->  [osc.send 9000]   <- broadcast (omit deviceId)
 
-let oscActive = false;
+// --- OSC Server state ---
+let oscServer      = null;
+let oscActive      = false;
+let currentOscPort = DEFAULT_OSC_PORT;
 
-const oscServer = new OscServer(OSC_PORT, '0.0.0.0');
+function notifyOscStatus(active, port, error) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('osc-status', { active, port, error });
+  }
+}
 
-// Must register 'error' before the async bind result fires,
-// otherwise Node.js throws an uncaught exception and Electron crashes.
-oscServer.on('error', (err) => {
-  console.error(`[OSC] ${err.message}`);
-  const detail = err.code === 'EADDRINUSE'
-    ? `ポート ${OSC_PORT} は既に使用中です。OSC 機能は無効になります。`
-    : err.message;
-  logToRenderer('error', `[OSC] ${detail}`);
-});
-
-oscServer.on('listening', () => {
-  oscActive = true;
-  console.log(`OSC server listening on UDP port ${OSC_PORT}`);
-  logToRenderer('info', `OSC サーバー起動 (UDP ${OSC_PORT})`);
-});
-
-oscServer.on('message', (msg) => {
+function handleOscMessage(msg) {
   const [address, ...args] = msg;
 
   // Heuristic: if first arg is a number ≤ 255 and there are more args, treat as deviceId
@@ -239,7 +230,50 @@ oscServer.on('message', (msg) => {
     default:
       logToRenderer('error', `Unknown OSC address: ${address}`);
   }
-});
+}
+
+function startOscServer(port) {
+  currentOscPort = port;
+
+  const doStart = () => {
+    oscActive = false;
+    const srv = new OscServer(port, '0.0.0.0');
+    oscServer = srv;
+
+    // Must register 'error' immediately — Node.js throws if no listener exists
+    srv.on('error', (err) => {
+      console.error(`[OSC] ${err.message}`);
+      const detail = err.code === 'EADDRINUSE'
+        ? `ポート ${port} は既に使用中です`
+        : err.message;
+      logToRenderer('error', `[OSC] ${detail}`);
+      notifyOscStatus(false, port, detail);
+    });
+
+    srv.on('listening', () => {
+      oscActive = true;
+      console.log(`OSC server listening on UDP port ${port}`);
+      logToRenderer('info', `OSC サーバー起動 (UDP ${port})`);
+      notifyOscStatus(true, port);
+    });
+
+    srv.on('message', handleOscMessage);
+  };
+
+  if (oscServer) {
+    const old = oscServer;
+    oscServer = null;
+    oscActive = false;
+    old.removeAllListeners();
+    try {
+      old.close(() => doStart());
+    } catch (_) {
+      doStart();
+    }
+  } else {
+    doStart();
+  }
+}
 
 // --- IPC: Renderer <-> Main ---
 ipcMain.handle('send-command', (event, { deviceId, command, data }) => {
@@ -248,7 +282,8 @@ ipcMain.handle('send-command', (event, { deviceId, command, data }) => {
 
 ipcMain.handle('get-devices', () => Array.from(devices.values()));
 
-ipcMain.handle('get-ports', () => ({ http: PORT, osc: OSC_PORT }));
+ipcMain.handle('get-ports',    () => ({ http: PORT, osc: currentOscPort, oscActive }));
+ipcMain.handle('restart-osc', (_, port) => startOscServer(Number(port)));
 
 // --- Helpers ---
 function logToRenderer(type, message) {
@@ -282,11 +317,14 @@ app.whenReady().then(() => {
   httpServer.listen(PORT, () => {
     console.log(`HTTP + Socket.IO server listening on port ${PORT}`);
   });
+  startOscServer(DEFAULT_OSC_PORT);
   createWindow();
 });
 
 app.on('window-all-closed', () => {
-  if (oscActive) oscServer.close();
+  if (oscServer && oscActive) {
+    try { oscServer.close(); } catch (_) {}
+  }
   httpServer.close();
   app.quit();
 });

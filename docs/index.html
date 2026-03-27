@@ -260,6 +260,7 @@
     <a href="#features">Features</a>
     <a href="#api">REST API</a>
     <a href="#osc">OSC</a>
+    <a href="#controller">Controller</a>
     <a href="#download">Download</a>
     <a href="https://github.com/634nakajima/GPUB" target="_blank">GitHub</a>
   </div>
@@ -411,6 +412,60 @@ await fetch('http://localhost:3000/api/command', {
         <tr><td><code>config.mode</code></td><td>mode</td><td>"motor" または "gpio"（セッション中のみ）</td></tr>
       </tbody>
     </table>
+  </div>
+</section>
+
+<!-- CONTROLLER -->
+<section id="controller">
+  <h2>GPUB Controller</h2>
+  <p class="section-sub">Electron ベースのデスクトップアプリ。Socket.IO サーバー・REST API・OSC サーバーが一体化したコントロールパネル。</p>
+
+  <div class="features-grid" style="margin-bottom:40px">
+    <div class="feature-card">
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8"/><path d="M12 3v4"/></svg></div>
+      <h3>デバイスカード</h3>
+      <p>接続デバイスを自動検出してカードを生成。各カードから個別にモーター制御・GPIO 制御・モード切替が可能。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <h3>ログパネル</h3>
+      <p>接続・コマンド・ACK をリアルタイム表示。デバッグやプロトタイピング中に通信状況を即座に確認できる。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <h3>EN / JA 切替</h3>
+      <p>ヘッダーのボタンで UI 表示言語を英語 / 日本語にワンタップで切替。デバイスカードの動的生成にも対応。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+      <h3>リファレンスパネル</h3>
+      <p>「Ref」ボタンで REST API・OSC の使用例をモーダル表示。コマンドの書き方をその場で確認できる。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+      <h3>デバイスシミュレータ</h3>
+      <p>実機なしでサーバーをテスト可能。<code>npm run sim</code> で 1 台、<code>npm run sim3</code> で 3 台の仮想デバイスを起動。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></div>
+      <h3>マルチプロトコル</h3>
+      <p>Socket.IO（デバイス接続）・REST API・OSC の 3 プロトコルを同時提供。ポート 3000（HTTP/WS）＋ 9000（UDP）。</p>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="code-block">
+      <h3>起動（開発）</h3>
+      <pre>cd server
+npm install
+npm start</pre>
+    </div>
+    <div class="code-block">
+      <h3>シミュレータ</h3>
+      <pre>npm run sim    # 1台
+npm run sim3   # 3台同時
+node simulator.js 5  # 任意台数</pre>
+    </div>
   </div>
 </section>
 

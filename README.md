@@ -305,12 +305,12 @@ Arduino IDEで開く場合は `firmware/GPUB/` フォルダを選択してくだ
 | `server/src/renderer.js` | デバイスカード生成・コマンド送信・EN/JA i18n |
 | `server/src/styles.css` | ダークテーマスタイル |
 
-## サンプルファイル
+## サンプルファイル（`examples/`）
 
 | ファイル | 説明 |
 |---------|------|
-| `motor-controller.html` | p5.jsサンプル。マウスドラッグでmotor.gotoを送信。REST API使用 |
-| `motor-controller.pd` | Pure Dataサンプル。ELSEライブラリのosc.sendでOSC送信 |
+| `examples/motor-controller.html` | p5.jsサンプル。マウスドラッグでmotor.gotoを送信。REST API使用 |
+| `examples/motor-controller.pd` | Pure Dataサンプル。ELSEライブラリのosc.sendでOSC送信 |
 
 ## ファームウェア依存ライブラリ
 

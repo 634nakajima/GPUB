@@ -15,8 +15,8 @@
           OSC UDP:
           <input id="osc-port-input" type="number" class="osc-port-input"
                  min="1024" max="65535"
-                 onkeydown="if(event.key==='Enter')applyOscPort()">
-          <button class="osc-apply-btn" onclick="applyOscPort()">▶</button>
+                 onkeydown="if(event.key==='Enter')applyOscPort()"
+                 onblur="applyOscPort()">
           <span id="osc-status-dot" class="osc-dot" title=""></span>
         </span>
       </span>

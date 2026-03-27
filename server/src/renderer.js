@@ -174,6 +174,7 @@ function applyOscPort() {
   const input = document.getElementById('osc-port-input');
   const port  = parseInt(input.value);
   if (isNaN(port) || port < 1024 || port > 65535) return;
+  if (port === oscPort) return;   // 値が変わっていなければ何もしない
   oscPort = port;
   window.gpub.restartOsc(port);
 }

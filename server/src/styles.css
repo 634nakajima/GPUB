@@ -57,18 +57,6 @@ header h1 {
 .osc-port-input:focus { outline: none; border-color: #66bb6a; color: #e0e0e0; }
 .osc-port-input.osc-input-error { border-color: #e57373 !important; color: #e57373; }
 
-.osc-apply-btn {
-  background: #1a2a1a;
-  border: 1px solid #2a4a2a;
-  color: #66bb6a;
-  border-radius: 4px;
-  padding: 2px 7px;
-  font-size: 0.85em;
-  cursor: pointer;
-  line-height: 1.4;
-}
-.osc-apply-btn:hover { background: #243a24; border-color: #66bb6a; }
-
 .osc-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
@@ -80,11 +68,11 @@ header h1 {
 .osc-dot-error  { background: #e57373; }
 
 .btn-broadcast {
-  background: #4a148c;
-  border-color: #6a1b9a;
-  color: #e0e0e0;
+  background: #e65100;
+  border-color: #bf360c;
+  color: #fff;
 }
-.btn-broadcast:hover { background: #6a1b9a; }
+.btn-broadcast:hover { background: #bf360c; }
 
 .btn-ref {
   background: #1a3a1a;

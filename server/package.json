@@ -1,6 +1,6 @@
 {
   "name": "gpub-controller",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "GPUB stepper motor controller - Electron + Socket.IO server",
   "author": "634nakajima",
   "main": "main.js",
@@ -44,6 +44,7 @@
       ]
     },
     "win": {
+      "icon": "assets/icon.ico",
       "target": [
         {
           "target": "nsis",

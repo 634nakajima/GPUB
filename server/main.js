@@ -169,8 +169,24 @@ expressApp.post('/api/command', (req, res) => {
 //   [list /gpub/motor/goto 1 400 5(    ->  [osc.send 9000]   <- absolute position
 //   [list /gpub/motor/move 200 1 5(    ->  [osc.send 9000]   <- broadcast (omit deviceId)
 
-const oscServer = new OscServer(OSC_PORT, '0.0.0.0', () => {
+let oscActive = false;
+
+const oscServer = new OscServer(OSC_PORT, '0.0.0.0');
+
+// Must register 'error' before the async bind result fires,
+// otherwise Node.js throws an uncaught exception and Electron crashes.
+oscServer.on('error', (err) => {
+  console.error(`[OSC] ${err.message}`);
+  const detail = err.code === 'EADDRINUSE'
+    ? `ポート ${OSC_PORT} は既に使用中です。OSC 機能は無効になります。`
+    : err.message;
+  logToRenderer('error', `[OSC] ${detail}`);
+});
+
+oscServer.on('listening', () => {
+  oscActive = true;
   console.log(`OSC server listening on UDP port ${OSC_PORT}`);
+  logToRenderer('info', `OSC サーバー起動 (UDP ${OSC_PORT})`);
 });
 
 oscServer.on('message', (msg) => {
@@ -270,7 +286,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  oscServer.close();
+  if (oscActive) oscServer.close();
   httpServer.close();
   app.quit();
 });

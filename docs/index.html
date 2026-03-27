@@ -135,9 +135,11 @@
       padding: 20px 22px;
     }
     .feature-icon {
-      font-size: 1.4em;
-      margin-bottom: 10px;
+      width: 28px; height: 28px;
+      margin-bottom: 12px;
+      color: var(--accent);
     }
+    .feature-icon svg { width: 100%; height: 100%; }
     .feature-card h3 {
       font-size: 0.95em;
       font-weight: 700;
@@ -287,32 +289,32 @@
   <p class="section-sub">シンプルなコマンド体系で、あらゆる外部アプリケーションからモーターと GPIO を制御</p>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-icon">⚙️</div>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
       <h3>ステッピングモーター制御</h3>
       <p>ステップ数・方向・速度をリアルタイム指定。<code>motor.goto</code> で絶対位置移動も可能。差分はデバイス側で自動計算。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🔌</div>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/></svg></div>
       <h3>汎用 GPIO 出力</h3>
       <p>モーターピンを汎用スイッチ出力に転用。デジタル ON/OFF と PWM 出力（周波数可変）に対応。SSR 経由の AC 機器制御も。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🌐</div>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
       <h3>REST API</h3>
       <p>HTTP POST でコマンド送信。p5.js・Python・Processing など、fetch が使える環境ならどこからでも制御可能。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🎛️</div>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/><circle cx="8" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="10" cy="18" r="2" fill="currentColor" stroke="none"/></svg></div>
       <h3>OSC サポート</h3>
       <p>UDP ポート 9000 で OSC メッセージを受信。Pure Data・Max/MSP・TouchDesigner からそのまま使用可能。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📡</div>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor" stroke="none"/></svg></div>
       <h3>Wi-Fi セットアップ</h3>
       <p>初回起動時は AP モードで起動。ブラウザから SSID・サーバー URL・デバイスモードを設定して保存。</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🖥️</div>
+      <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
       <h3>Electron コントロールパネル</h3>
       <p>接続デバイスを自動検出してカード表示。GUI で個別制御しながらログをリアルタイム確認。EN/JA 切替対応。</p>
     </div>

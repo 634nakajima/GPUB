@@ -17,6 +17,7 @@
   "build": {
     "appId": "com.gpub.controller",
     "productName": "GPUB Controller",
+    "icon": "assets/icon.icns",
     "directories": {
       "output": "dist"
     },
@@ -25,11 +26,13 @@
       "preload.js",
       "simulator.js",
       "src/**/*",
+      "assets/**/*",
       "node_modules/**/*",
       "!node_modules/electron-builder/**/*"
     ],
     "mac": {
       "category": "public.app-category.utilities",
+      "icon": "assets/icon.icns",
       "target": [
         {
           "target": "dmg",

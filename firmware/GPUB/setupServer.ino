@@ -1,5 +1,5 @@
 #ifndef APSSID
-#define APSSID "ubiquitel"
+#define APSSID "GPUB"
 #endif
 
 const char *ubssid = APSSID;

@@ -1,0 +1,7 @@
+#N canvas 827 239 734 565 12;
+#X obj 53 206 else/osc.send 9000;
+#X msg 53 169 list /gpub/motor/move 1 200 1 5;
+#X msg 278 169 list /gpub/motor/goto 1 400 5;
+#X text 53 6 Host: localhost Port: 9000 (UDP) \; \; /gpub/motor/move [deviceId] steps direction speed \; /gpub/motor/goto [deviceId] position speed \; /gpub/motor/stop [deviceId] \; /gpub/motor/status [deviceId] \; /gpub/switch/set [deviceId] pin value \; /gpub/switch/pwm [deviceId] pin duty freq \; /gpub/config/mode [deviceId] mode;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;

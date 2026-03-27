@@ -31,6 +31,11 @@ bool motorMoveAckPending = false;
 const int outputPins[] = {5, 17, 4, 15, 16}; // inA, inB, PoS, Vs2B, LED
 const int NUM_OUTPUT_PINS = 5;
 
+//PWM (LEDC)-----------------------------
+// LEDC channels 0-4 mapped to outputPins 0-4
+#define LEDC_RESOLUTION 8  // 8-bit: duty 0-255
+bool pinPWMActive[5] = {false, false, false, false, false};
+
 //Timer----------------------------------
 Ticker ticker;
 

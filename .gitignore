@@ -3,3 +3,5 @@
 *.swo
 build/
 .pio/
+server/node_modules/
+server/dist/

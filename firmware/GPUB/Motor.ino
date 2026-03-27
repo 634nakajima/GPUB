@@ -103,3 +103,35 @@ void stopMotor() {
   digitalWrite(PoS, HIGH);
   digitalWrite(Vs2B, LOW);
 }
+
+// --- PWM (LEDC) ---
+
+void setPinPWM(int pinIndex, int duty, int freq) {
+  if (pinIndex < 0 || pinIndex >= NUM_OUTPUT_PINS) return;
+  int pin = outputPins[pinIndex];
+  int channel = pinIndex; // LEDC channels 0-4
+
+  if (freq <= 0) freq = 1000;
+  duty = constrain(duty, 0, 255);
+
+  ledcSetup(channel, freq, LEDC_RESOLUTION);
+  ledcAttachPin(pin, channel);
+  ledcWrite(channel, duty);
+  pinPWMActive[pinIndex] = true;
+}
+
+// Detach LEDC from a pin, restoring normal digitalWrite control
+void stopPinPWM(int pinIndex) {
+  if (pinIndex < 0 || pinIndex >= NUM_OUTPUT_PINS) return;
+  if (!pinPWMActive[pinIndex]) return;
+  ledcDetachPin(outputPins[pinIndex]);
+  digitalWrite(outputPins[pinIndex], LOW);
+  pinPWMActive[pinIndex] = false;
+}
+
+// Detach all active PWM channels (called on mode switch)
+void stopAllPWM() {
+  for (int i = 0; i < NUM_OUTPUT_PINS; i++) {
+    stopPinPWM(i);
+  }
+}

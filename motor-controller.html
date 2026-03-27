@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GPUB p5.js Sample</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #1a1a2e; overflow: hidden; }
+  </style>
+</head>
+<body>
+<script>
+// -------------------------------------------------------
+// GPUB p5.js サンプル
+// REST API: http://localhost:3000/api
+//
+// 操作方法:
+//   クリック / ドラッグ  →  motor.goto（マウスX座標をpos 0〜1000にマッピング）
+//   Space               →  motor.stop（全デバイス）
+//   S                   →  motor.status（全デバイス）
+//   1 / 2 / 3 ...       →  送信先デバイス番号を切り替え
+// -------------------------------------------------------
+
+const API      = 'http://localhost:3000/api';
+const POS_MIN  = 0;
+const POS_MAX  = 1000;
+
+let devices      = [];
+let targetDevice = 1;   // コマンド送信先のデバイス番号
+let logs         = [];
+let dragging     = false;
+
+// ---- API ヘルパー ----
+
+// コマンドをREST APIで送信する
+async function sendCommand(deviceId, command, data = {}) {
+  try {
+    await fetch(`${API}/command`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ deviceId, command, data })
+    });
+    addLog(`→ [#${deviceId}] ${command} ${JSON.stringify(data)}`);
+  } catch (e) {
+    addLog(`error: ${e.message}`);
+  }
+}
+
+// デバイス一覧を2秒ごとに取得してdevices配列を更新する
+async function fetchDevices() {
+  try {
+    const res = await fetch(`${API}/devices`);
+    devices = await res.json();
+  } catch (_) {
+    devices = [];
+  }
+}
+
+// ログを先頭に追加し、8件を超えたら末尾を削除する
+function addLog(msg) {
+  const t = new Date().toTimeString().slice(0, 8);
+  logs.unshift(`[${t}] ${msg}`);
+  if (logs.length > 8) logs.pop();
+}
+
+// ---- マウスX座標をステップ位置に変換 ----
+function mousePosToSteps(mx) {
+  return Math.round(map(mx, 60, width - 60, POS_MIN, POS_MAX));
+}
+
+// ---- p5.js ----
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  textFont('monospace');
+  fetchDevices();
+  setInterval(fetchDevices, 2000); // 2秒ごとにデバイス一覧を更新
+}
+
+function draw() {
+  background(26, 26, 46);
+
+  const barY  = height * 0.5;
+  const barX0 = 60;
+  const barX1 = width - 60;
+
+  // --- ポジションバー（トラックライン）---
+  stroke(40, 40, 70);
+  strokeWeight(3);
+  line(barX0, barY, barX1, barY);
+
+  // --- 目盛り（100ステップごと）---
+  stroke(50, 50, 80);
+  strokeWeight(1);
+  for (let p = POS_MIN; p <= POS_MAX; p += 100) {
+    const x = map(p, POS_MIN, POS_MAX, barX0, barX1);
+    line(x, barY - 6, x, barY + 6);
+    noStroke();
+    fill(60, 60, 90);
+    textSize(9);
+    textAlign(CENTER);
+    text(p, x, barY + 18);
+    stroke(50, 50, 80);
+    strokeWeight(1);
+  }
+
+  // --- 各デバイスの現在位置インジケーター ---
+  devices.forEach((d) => {
+    const x        = map(d.position, POS_MIN, POS_MAX, barX0, barX1);
+    const isMoving = d.state === 'moving';
+
+    // 移動中はグロー表示
+    if (isMoving) {
+      noStroke();
+      fill(79, 195, 247, 40);
+      ellipse(x, barY, 36, 36);
+    }
+
+    stroke(79, 195, 247);
+    strokeWeight(isMoving ? 2 : 1);
+    fill(isMoving ? color(79, 195, 247) : color(26, 60, 90));
+    ellipse(x, barY, 18, 18);
+
+    // デバイス番号と現在ポジションを表示
+    noStroke();
+    fill(79, 195, 247);
+    textSize(10);
+    textAlign(CENTER);
+    text(`#${d.index}`, x, barY - 16);
+    fill(120, 120, 160);
+    text(d.position, x, barY - 28);
+    textAlign(LEFT);
+  });
+
+  // --- マウス位置のターゲットカーソル ---
+  if (mouseX >= barX0 && mouseX <= barX1) {
+    const tPos = mousePosToSteps(mouseX);
+    const tx   = map(tPos, POS_MIN, POS_MAX, barX0, barX1);
+    stroke(255, 200, 60, 180);
+    strokeWeight(1);
+    line(tx, barY - 40, tx, barY + 40);
+    noStroke();
+    fill(255, 200, 60);
+    textSize(11);
+    textAlign(CENTER);
+    text(tPos, tx, barY - 46);
+    textAlign(LEFT);
+  }
+
+  // --- ヘッダー ---
+  noStroke();
+  fill(79, 195, 247);
+  textSize(13);
+  text('GPUB p5.js Sample', 20, 28);
+
+  fill(100, 100, 140);
+  textSize(11);
+  text(`REST API: ${API}`, 20, 48);
+
+  // --- デバイス一覧 ---
+  if (devices.length === 0) {
+    fill(100, 60, 60);
+    textSize(11);
+    text('No devices connected', 20, 75);
+  } else {
+    devices.forEach((d, i) => {
+      // 選択中のデバイスを緑色で強調表示
+      fill(d.index === targetDevice ? color(165, 214, 167) : color(100, 120, 100));
+      textSize(11);
+      text(
+        `${d.index === targetDevice ? '▶ ' : '  '}#${d.index}  ${d.ip}  ${d.mode} / ${d.state}  pos:${d.position}`,
+        20, 72 + i * 17
+      );
+    });
+  }
+
+  // --- 送信先デバイス表示 ---
+  fill(255, 200, 60);
+  textSize(11);
+  text(`Target device: #${targetDevice}  (press 1-9 to change)`, 20, height - 110);
+
+  // --- 操作説明 ---
+  fill(70, 70, 100);
+  textSize(11);
+  text('Click / Drag: motor.goto   Space: motor.stop (all)   S: motor.status (all)', 20, height - 90);
+
+  // --- ログ表示（新しいものほど明るく）---
+  fill(60, 60, 90);
+  textSize(10);
+  text('Log', 20, height - 68);
+  logs.forEach((msg, i) => {
+    fill(lerpColor(color(180, 180, 200), color(60, 60, 90), i / logs.length));
+    text(msg, 20, height - 54 + i * 13);
+  });
+}
+
+// マウスクリック／ドラッグ開始でmotor.gotoを送信
+function mousePressed() {
+  if (mouseX >= 60 && mouseX <= width - 60) {
+    dragging = true;
+    gotoMouse();
+  }
+}
+
+// ドラッグ中は連続してmotor.gotoを送信
+function mouseDragged() {
+  if (dragging) gotoMouse();
+}
+
+function mouseReleased() {
+  dragging = false;
+}
+
+// マウス位置をポジションに変換してmotor.gotoを送信
+function gotoMouse() {
+  const pos = mousePosToSteps(mouseX);
+  sendCommand(targetDevice, 'motor.goto', { position: pos, speed: 5 });
+}
+
+function keyPressed() {
+  if (key === ' ') {
+    sendCommand('__all__', 'motor.stop', {});
+    return false; // ブラウザのスクロールを無効化
+  }
+  if (key === 's' || key === 'S') {
+    sendCommand('__all__', 'motor.status', {});
+  }
+  // 数字キーで送信先デバイスを切り替え
+  const n = parseInt(key);
+  if (!isNaN(n) && n >= 1 && n <= 9) {
+    targetDevice = n;
+    addLog(`Target device → #${n}`);
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+</body>
+</html>

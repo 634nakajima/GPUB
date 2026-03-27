@@ -1,0 +1,69 @@
+{
+  "name": "gpub-controller",
+  "version": "1.0.0",
+  "description": "GPUB stepper motor controller - Electron + Socket.IO server",
+  "author": "634nakajima",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "sim": "node simulator.js",
+    "sim2": "node simulator.js 2",
+    "sim3": "node simulator.js 3"
+  },
+  "build": {
+    "appId": "com.gpub.controller",
+    "productName": "GPUB Controller",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "simulator.js",
+      "src/**/*",
+      "node_modules/**/*",
+      "!node_modules/electron-builder/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "node-osc": "^11.3.0",
+    "socket.io": "^4.7.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8",
+    "socket.io-client": "^4.8.3"
+  }
+}

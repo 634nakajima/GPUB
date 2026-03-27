@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GPUB Controller</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>GPUB Controller</h1>
+    <div class="header-right">
+      <span id="server-info" class="server-info"></span>
+      <button class="btn-broadcast" onclick="broadcastAll()" data-i18n="btn.broadcast">Broadcast All</button>
+      <button class="btn-ref" onclick="toggleRef()" data-i18n="btn.ref">Ref</button>
+      <button class="btn-lang" id="btn-lang" onclick="toggleLang()">JA</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <!-- Left: Device Cards -->
+    <div class="panel devices-panel">
+      <div class="devices-header">
+        <h2 data-i18n="section.devices">Devices</h2>
+      </div>
+      <div id="device-cards">
+        <div id="no-devices" class="no-devices" data-i18n="no.devices">No devices connected</div>
+      </div>
+    </div>
+
+    <!-- Right: Log Monitor -->
+    <div class="panel log-panel">
+      <div class="log-header">
+        <h2 data-i18n="section.log">Log</h2>
+        <button onclick="clearLog()" data-i18n="btn.clear">Clear</button>
+      </div>
+      <div id="log" class="log-area"></div>
+    </div>
+  </div>
+
+  <!-- Reference Modal (overlay) -->
+  <div id="ref-overlay" class="ref-overlay" hidden onclick="handleOverlayClick(event)">
+    <div id="ref-panel" class="ref-panel">
+      <div class="ref-header">
+        <h2 data-i18n="ref.title">External Control Reference</h2>
+        <button onclick="toggleRef()">✕</button>
+      </div>
+      <div class="ref-body">
+
+        <section class="ref-section">
+          <h3 data-i18n="ref.rest.title">REST API</h3>
+          <p class="ref-note" data-i18n="ref.rest.note">HTTP POST to control devices from any language (p5.js, Python, etc.)</p>
+
+          <div class="ref-block">
+            <div class="ref-label" data-i18n="ref.get.label">GET /api/devices — Device list</div>
+            <pre id="ref-get-devices"></pre>
+          </div>
+
+          <div class="ref-block">
+            <div class="ref-label" data-i18n="ref.post.label">POST /api/command — Send command</div>
+            <pre id="ref-post-command"></pre>
+          </div>
+
+          <div class="ref-block">
+            <div class="ref-label" data-i18n="ref.deviceid.label">deviceId specification</div>
+            <table class="ref-table">
+              <tr><td><code>1</code>, <code>2</code>, ...</td><td data-i18n="ref.deviceid.index">Device index (integer)</td></tr>
+              <tr><td><code>"192.168.1.x"</code></td><td data-i18n="ref.deviceid.ip">IP address</td></tr>
+              <tr><td><code>"__all__"</code></td><td data-i18n="ref.deviceid.all">Broadcast to all devices</td></tr>
+            </table>
+          </div>
+
+          <div class="ref-block">
+            <div class="ref-label" data-i18n="ref.p5.label">p5.js example</div>
+            <pre id="ref-p5-example"></pre>
+          </div>
+        </section>
+
+        <section class="ref-section">
+          <h3 data-i18n="ref.osc.title">OSC</h3>
+          <p class="ref-note" data-i18n="ref.osc.note">Send commands via UDP. Compatible with Pure Data, Max/MSP, TouchDesigner, etc.</p>
+
+          <div class="ref-block">
+            <div class="ref-label" data-i18n="ref.osc.addr.label">Address patterns</div>
+            <pre id="ref-osc-address"></pre>
+          </div>
+
+          <div class="ref-block">
+            <div class="ref-label" data-i18n="ref.pd.label">Pure Data example</div>
+            <pre id="ref-pd-example"></pre>
+          </div>
+
+          <div class="ref-block">
+            <div class="ref-label" data-i18n="ref.osc.deviceid.label">deviceId (1st arg) specification</div>
+            <table class="ref-table">
+              <tr><td><code>1</code>, <code>2</code>, ...</td><td data-i18n="ref.osc.id.num">Device index</td></tr>
+              <tr><td><code>__all__</code></td><td data-i18n="ref.osc.id.all">Broadcast</td></tr>
+              <tr><td data-i18n="ref.osc.id.omit.key">Omit</td><td data-i18n="ref.osc.id.omit">Broadcast</td></tr>
+            </table>
+          </div>
+        </section>
+
+        <section class="ref-section">
+          <h3 data-i18n="ref.cmd.title">Command list</h3>
+          <table class="ref-table ref-table-wide">
+            <thead>
+              <tr>
+                <th data-i18n="ref.cmd.th.command">Command</th>
+                <th data-i18n="ref.cmd.th.params">Parameters</th>
+                <th data-i18n="ref.cmd.th.desc">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>motor.move</code></td><td>steps, direction, speed</td><td data-i18n="ref.cmd.motor.move">direction: 1=CW, -1=CCW / speed: ms/step (min 5)</td></tr>
+              <tr><td><code>motor.goto</code></td><td>position, speed</td><td data-i18n="ref.cmd.motor.goto">Move to absolute position. Delta calculated automatically.</td></tr>
+              <tr><td><code>motor.stop</code></td><td>—</td><td data-i18n="ref.cmd.motor.stop">Immediate stop</td></tr>
+              <tr><td><code>motor.status</code></td><td>—</td><td data-i18n="ref.cmd.motor.status">Get current state</td></tr>
+              <tr><td><code>switch.set</code></td><td>pin, value</td><td data-i18n="ref.cmd.switch.set">value: 1=ON, 0=OFF</td></tr>
+              <tr><td><code>switch.pwm</code></td><td>pin, duty, freq</td><td data-i18n="ref.cmd.switch.pwm">duty: 0–255 / freq: Hz (5–10 recommended for SSR)</td></tr>
+              <tr><td><code>config.mode</code></td><td>mode</td><td data-i18n="ref.cmd.config.mode">"motor" or "gpio" (session only)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="ref-section">
+          <h3 data-i18n="ref.pin.title">Pin mapping</h3>
+          <table class="ref-table ref-table-wide">
+            <thead>
+              <tr>
+                <th data-i18n="ref.pin.th.pin">pin</th>
+                <th data-i18n="ref.pin.th.gpio">GPIO</th>
+                <th data-i18n="ref.pin.th.motor">Motor mode</th>
+                <th data-i18n="ref.pin.th.gpio-mode">GPIO mode</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>GPIO16 (LED)</td><td data-i18n="ref.pin.motor0">✓ (fixed to GPIO16)</td><td>✓ GPIO5 (inA)</td></tr>
+              <tr><td>1</td><td>GPIO17</td><td>✗</td><td>✓ GPIO17 (inB)</td></tr>
+              <tr><td>2</td><td>GPIO4</td><td>✗</td><td>✓ GPIO4 (PoS)</td></tr>
+              <tr><td>3</td><td>GPIO15</td><td>✗</td><td>✓ GPIO15 (Vs2B)</td></tr>
+              <tr><td>4</td><td>GPIO16</td><td>✗</td><td>✓ GPIO16 (LED)</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
